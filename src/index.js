@@ -1,3 +1,9 @@
 import CarltonNote from './CarltonNote';
 
-new CarltonNote(document.querySelector('#root'));
+new CarltonNote({
+  $target: document.querySelector('#root'),
+  commandsList: [
+    ['bold', 'italic', 'underline', 'strikethrough'],
+    ['image', 'video'],
+  ],
+});
