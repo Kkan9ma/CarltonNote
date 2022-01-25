@@ -8,7 +8,7 @@ export default function CarltonNote({ $target, commandsList }) {
   // console.log('Carlton Note');
   const $carltonNote = document.createElement('section');
 
-  $carltonNote.id = 'carltonNote';
+  $carltonNote.id = 'carlton-note';
   $target.appendChild($carltonNote);
 
   for (const style in styles) {

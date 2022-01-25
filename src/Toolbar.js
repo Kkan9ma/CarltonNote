@@ -1,65 +1,38 @@
-const styles = {
-  backgroundColor: 'orange',
-};
+import CommandButtonGroup from './CommandButtonGroup';
 
-function CommandButton(command) {
-  const $button = document.createElement('button');
-
-  $button.innerHTML = command;
-
-  return $button;
-}
-
-function CommandButtonContainer(command) {
-  const $container = document.createElement('li');
-
-  $container.className = 'note-button';
-  $container.appendChild(CommandButton(command));
-
-  return $container;
-}
-
-export default function Toolbar({ $target, commandsList }) {
+export default function ToolbarArea({ $target, commandsList }) {
   console.log('Toolbar');
-  const $toolbar = document.createElement('div');
+  const $toolbarArea = document.createElement('div');
 
-  $toolbar.className = 'carlton-toolbar';
+  $toolbarArea.className = 'note-toolbar';
 
   this.target = $target;
   this.commandsList = commandsList;
-  this.target.appendChild($toolbar);
+  this.target.appendChild($toolbarArea);
 
-  this.commandGroup = '';
+  this.textCommandButtonGroup = new CommandButtonGroup({
+    $target: $toolbarArea,
+    commandsList: this.commandsList['text'],
+    action: 'text-command',
+  });
+
+  this.mediaCommandButtonGroup = new CommandButtonGroup({
+    $target: $toolbarArea,
+    commandsList: this.commandsList['media'],
+    action: 'media-command',
+  });
+
+  const styles = {
+    backgroundColor: 'orange',
+    border: '1px solid black',
+  };
 
   for (const style in styles) {
-    $toolbar.style[style] = styles[style];
+    $toolbarArea.style[style] = styles[style];
   }
 
   this.render = () => {
-    const commandGroupsHTMLString = `
-      <ul class='note-button-group'>
-        ${this.commandsList
-          .map((commandArr) =>
-            commandArr
-              .map(
-                (command) => `
-              <li class='note-button'>
-                ${CommandButtonContainer(command).innerHTML}
-              </li>
-            `
-              )
-              .join('')
-          )
-          .join('')}
-      </ul>
-    `;
-
-    $toolbar.innerHTML = commandGroupsHTMLString;
+    this.textCommandButtonGroup.render();
+    this.mediaCommandButtonGroup.render();
   };
-
-  this.init = () => {
-    this.render();
-  };
-
-  this.init();
 }
