@@ -1,3 +1,3 @@
-import App from './App.js';
+import CarltonNote from './CarltonNote';
 
-new App(document.querySelector('#root'));
+new CarltonNote(document.querySelector('#root'));
