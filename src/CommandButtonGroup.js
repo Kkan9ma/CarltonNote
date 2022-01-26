@@ -1,3 +1,14 @@
+import '@fortawesome/fontawesome-free/js/all.js';
+
+const icons = {
+  bold: '<i class="fas fa-bold"></i>',
+  italic: '<i class="fas fa-italic"></i>',
+  underline: '<i class="fas fa-underline"></i>',
+  strikethrough: '<i class="fas fa-strikethrough"></i>',
+  image: '<i class="fas fa-images"></i>',
+  video: '<i class="fas fa-video"></i>',
+};
+
 function CommandButtonContainer({ command, action }) {
   return `
     <li className='note-button' data-action=${action} style='display: inline-block'>
@@ -28,21 +39,22 @@ export default function CommandButtonGroup({ $target, commandsList, action }) {
 
   this.render = () => {
     console.log(this.commandsList);
-
+    console.log(icons);
     $buttonGroup.innerHTML = `
       ${this.commandsList
         // .map((command) => CommandButtonContainer({ command, action }))
         .map(
           (command) => `
-          <li class='note-button-container'  style='display: inline-block'>
-            <button 
-              class='note-command-button' 
-              data-command=${command}
-              data-action-type=${action}
-            >
-              ${command}
-            </button>
-          </li>`
+            <li class='note-button-container'  style='display: inline-block'>
+              <button 
+                class='note-command-button' 
+                data-command=${command}
+                data-action-type=${action}
+              >
+                ${icons[command]}
+              </button>
+            </li>
+          `
         )
         .join('')}
     `;
