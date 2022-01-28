@@ -1,5 +1,8 @@
 const styles = {
-  backgroundColor: 'pink',
+  height: '1000px',
+  border: '1px solid rgba(0,0,0,0.3)',
+  overflowY: 'auto',
+  padding: '7px',
 };
 
 export default function ContentEditingArea({ $target, commandsList }) {

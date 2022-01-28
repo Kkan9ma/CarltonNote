@@ -28,7 +28,7 @@ export default function CommandButtonGroup({ $target, commandsList, action }) {
 
   const styles = {
     listStyle: 'none',
-    margin: '0',
+    margin: '0 20px 0 0 ',
     padding: '0',
   };
 
@@ -49,7 +49,13 @@ export default function CommandButtonGroup({ $target, commandsList, action }) {
                 class='note-command-button' 
                 data-command=${command}
                 data-action-type=${action}
-                style='border-width: 1px; border-style: solid; border-radius: 2px; padding: 5px 8px; border-color: #ccc; background-color: #fff'
+                style='
+                  border-width: 1px; 
+                  border-style: solid;
+                  border-radius: 2px;
+                  padding: 6px 9px;
+                  border-color: #ccc;
+                  background-color: #fff'
               >
                 ${icons[command]}
               </button>

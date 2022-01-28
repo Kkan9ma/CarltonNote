@@ -2,7 +2,7 @@ import Toolbar from './Toolbar.js';
 import ContentEditingArea from './ContentEditingArea.js';
 
 const styles = {
-  backgroundColor: 'yellow',
+  minWidth: '300px',
 };
 
 export default function NoteContainer({ $target, commandsList }) {

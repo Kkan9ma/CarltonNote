@@ -24,6 +24,10 @@ export default function ToolbarArea({ $target, commandsList }) {
 
   const styles = {
     backgroundColor: '#f5f5f5',
+    border: '1px solid rgba(0,0,0,0.3)',
+    borderBottomWidth: '0px',
+    padding: '8px 5px',
+    display: 'flex',
   };
 
   for (const style in styles) {
