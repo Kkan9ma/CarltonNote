@@ -11,18 +11,23 @@ const icons = {
 
 function CommandButtonContainer({ command, action }) {
   return `
-    <li className='note-button' data-action=${action} style='display: inline-block'>
+    <li class='note-button' data-action=${action} style='display: inline-block'>
       <button>${command}</button>
     </li>
   `;
 }
 
-export default function CommandButtonGroup({ $target, commandsList, action }) {
+export default function CommandButtonGroup({
+  $target,
+  commandsList,
+  action,
+  executeTextCommand,
+  executeMediaCommand,
+}) {
   console.log('CommandButtonGroup');
   const $buttonGroup = document.createElement('ul');
 
-  $buttonGroup.className = 'note-button-group';
-
+  $buttonGroup.className = `note-button-group ${action}`;
   this.target = $target;
   this.commandsList = commandsList;
 
@@ -36,26 +41,49 @@ export default function CommandButtonGroup({ $target, commandsList, action }) {
     $buttonGroup.style[style] = styles[style];
   }
 
+  const handleClick = (event) => {
+    const { target } = event;
+
+    const button =
+      target.closest('button') === null
+        ? target.querySelector('button')
+        : target.closest('button');
+
+    const { actionType } = button.dataset;
+    const { command } = button.dataset;
+
+    if (target.tagName === 'UL') {
+      return;
+    }
+    if (actionType === 'text-command') {
+      executeTextCommand(command);
+
+      return;
+    }
+    if (actionType === 'media-command') {
+      executeMediaCommand(command);
+    }
+  };
+
   this.render = () => {
-    console.log(this.commandsList);
-    console.log(icons);
     $buttonGroup.innerHTML = `
       ${this.commandsList
         // .map((command) => CommandButtonContainer({ command, action }))
         .map(
           (command) => `
-            <li class='note-button-container'  style='display: inline-block'>
+            <li class='note-button-container' style='display: inline-block'>
               <button 
-                class='note-command-button' 
+                class='note-command-button'
                 data-command=${command}
                 data-action-type=${action}
                 style='
                   border-width: 1px; 
-                  border-style: solid;
+                  /*border-style: solid;*/
                   border-radius: 2px;
                   padding: 6px 9px;
                   border-color: #ccc;
-                  background-color: #fff'
+                  background-color: #fff
+                '
               >
                 ${icons[command]}
               </button>
@@ -66,4 +94,22 @@ export default function CommandButtonGroup({ $target, commandsList, action }) {
     `;
     this.target.appendChild($buttonGroup);
   };
+
+  this.bindEvents = () => {
+    // const  = this.target.querySelector(`.${action}`);
+    // const buttons = $buttonGroup.querySelectorAll('button');
+
+    // buttons.forEach((button) => {
+    //   button.addEventListener('click', (event) => {
+    //     onClick(event);
+    //   });
+    // });
+
+    $buttonGroup.addEventListener('click', (event) => {
+      handleClick(event);
+    });
+  };
+
+  this.render();
+  this.bindEvents();
 }

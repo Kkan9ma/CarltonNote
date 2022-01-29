@@ -1,7 +1,11 @@
 import CommandButtonGroup from './CommandButtonGroup';
 
-export default function ToolbarArea({ $target, commandsList }) {
-  console.log('Toolbar');
+export default function ToolbarArea({
+  $target,
+  commandsList,
+  executeTextCommand,
+  executeMediaCommand,
+}) {
   const $toolbarArea = document.createElement('div');
 
   $toolbarArea.className = 'note-toolbar';
@@ -14,12 +18,14 @@ export default function ToolbarArea({ $target, commandsList }) {
     $target: $toolbarArea,
     commandsList: this.commandsList['text'],
     action: 'text-command',
+    executeTextCommand,
   });
 
   this.mediaCommandButtonGroup = new CommandButtonGroup({
     $target: $toolbarArea,
     commandsList: this.commandsList['media'],
     action: 'media-command',
+    executeMediaCommand,
   });
 
   const styles = {

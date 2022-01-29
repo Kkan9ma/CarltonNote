@@ -5,8 +5,15 @@ const styles = {
   minWidth: '300px',
 };
 
+const executeMediaCommand = (command) => {
+  console.log(command);
+};
+
+const executeTextCommand = (command) => {
+  console.log(command);
+};
+
 export default function NoteContainer({ $target, commandsList }) {
-  console.log('note container');
   const $noteContainer = document.createElement('div');
 
   $noteContainer.id = 'note-container';
@@ -18,7 +25,10 @@ export default function NoteContainer({ $target, commandsList }) {
   this.toolbar = new Toolbar({
     $target: $noteContainer,
     commandsList: this.commandsList,
+    executeTextCommand,
+    executeMediaCommand: executeMediaCommand,
   });
+
   this.contentEditingArea = new ContentEditingArea({
     $target: $noteContainer,
     commandsList,
