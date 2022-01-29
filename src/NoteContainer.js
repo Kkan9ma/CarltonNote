@@ -5,13 +5,9 @@ const styles = {
   minWidth: '300px',
 };
 
-const executeMediaCommand = (command) => {
-  console.log(command);
-};
+const executeMediaCommand = (command) => {};
 
-const executeTextCommand = (command) => {
-  console.log(command);
-};
+const executeTextCommand = (command) => {};
 
 export default function NoteContainer({ $target, commandsList }) {
   const $noteContainer = document.createElement('div');

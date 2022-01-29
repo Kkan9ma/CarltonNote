@@ -9,14 +9,6 @@ const icons = {
   video: '<i class="fas fa-video"></i>',
 };
 
-function CommandButtonContainer({ command, action }) {
-  return `
-    <li class='note-button' data-action=${action} style='display: inline-block'>
-      <button>${command}</button>
-    </li>
-  `;
-}
-
 export default function CommandButtonGroup({
   $target,
   commandsList,
@@ -24,7 +16,6 @@ export default function CommandButtonGroup({
   executeTextCommand,
   executeMediaCommand,
 }) {
-  console.log('CommandButtonGroup');
   const $buttonGroup = document.createElement('ul');
 
   $buttonGroup.className = `note-button-group ${action}`;
@@ -68,6 +59,7 @@ export default function CommandButtonGroup({
   this.render = () => {
     $buttonGroup.innerHTML = `
       ${this.commandsList
+        // TODO: button-container 컴포넌트화
         // .map((command) => CommandButtonContainer({ command, action }))
         .map(
           (command) => `
@@ -96,15 +88,7 @@ export default function CommandButtonGroup({
   };
 
   this.bindEvents = () => {
-    // const  = this.target.querySelector(`.${action}`);
-    // const buttons = $buttonGroup.querySelectorAll('button');
-
-    // buttons.forEach((button) => {
-    //   button.addEventListener('click', (event) => {
-    //     onClick(event);
-    //   });
-    // });
-
+    // TODO: querySelectorAll로 해결 가능한지 검토 필요
     $buttonGroup.addEventListener('click', (event) => {
       handleClick(event);
     });
