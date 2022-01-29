@@ -1,4 +1,4 @@
-import Toolbar from './Toolbar.js';
+import ToolbarArea from './ToolbarArea.js';
 import ContentEditingArea from './ContentEditingArea.js';
 
 const styles = {
@@ -18,7 +18,7 @@ export default function NoteContainer({ $target, commandsList }) {
   this.commandsList = commandsList;
   this.target.appendChild($noteContainer);
 
-  this.toolbar = new Toolbar({
+  this.toolbar = new ToolbarArea({
     $target: $noteContainer,
     commandsList: this.commandsList,
     executeTextCommand,

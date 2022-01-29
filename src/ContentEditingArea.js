@@ -6,7 +6,6 @@ const styles = {
 };
 
 export default function ContentEditingArea({ $target, commandsList }) {
-  console.log('ContentEditingArea');
   const $contentEditingArea = document.createElement('div');
 
   $contentEditingArea.className = 'carlton-content-editing-area';
