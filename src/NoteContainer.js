@@ -53,15 +53,6 @@ const executeTextCommand = (command) => {
   /**
    *  1. range가 있는지 확인한다.
    *    1.1 range가 없다면 return;
-   *
-   *  2. 강조 효과를 확인한다.
-   *    2.1 tagname을 반환한 array
-   *    2.2 filter
-   *    2.3 태그맵이랑 비교하여 현재 내가 누른 명령어가 적용되어 있는지 확인한다.
-   *
-   *  3. 강조효과가 없었다면 -> surround
-   *  4. 강조효과가 있다면
-   *    4.1
    */
   const sel = window.getSelection();
 
@@ -83,20 +74,40 @@ const executeTextCommand = (command) => {
     underline: ['U'],
   };
 
-  const currentCommands = getNodesInRange(range)
-    .map((node) => node.tagName)
-    .filter((node) => Object.values(tagMap).flat().includes(node));
+  /**  2. 강조 효과를 확인한다.
+   *    2.1 tagname을 반환한 array
+   *    2.2 filter
+   *    2.3 태그랑 비교하여 현재 내가 누른 명령어가 적용되어 있는지 확인한다.
+   *
+   */
 
-  const isApplied = currentCommands.some((currentCommand) =>
-    tagMap[command].some((tag) => tag === currentCommand)
-  );
+  const isApplied = getNodesInRange(range).some((element) => {
+    if (['DIV', 'BODY', 'HTML', document].includes(element.tagName)) {
+      return false;
+    }
+    if (tagMap[command].some((tag) => tag === element.tagName)) {
+      return true;
+    }
+    if (
+      element.nodeType !== 3 &&
+      element !== document &&
+      (element.querySelector(tagMap[command][0].toLowerCase()) ||
+        element.querySelector(tagMap[command][1].toLowerCase()))
+    ) {
+      return true;
+    }
+  });
+
+  // 3. 강조효과가 없었다면 -> surround
 
   if (!isApplied) {
+    // tag for surroundContents: strong, em, s
     range.surroundContents(document.createElement(tagMap[command][1]));
 
     return;
   }
-  console.log(isApplied);
+
+  // 4. 강조효과가 있다면
 };
 
 export default function NoteContainer({ $target, commandsList }) {
