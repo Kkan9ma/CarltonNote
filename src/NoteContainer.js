@@ -5,6 +5,13 @@ const styles = {
   minWidth: '300px',
 };
 
+const tagMap = {
+  bold: ['B', 'STRONG'],
+  italic: ['I', 'EM'],
+  strikethrough: ['STRIKE', 'S'],
+  underline: ['U', 'U'],
+};
+
 // cf) https://stackoverflow.com/a/7931003
 function getNextNode(node) {
   if (node.firstChild) {
@@ -62,17 +69,11 @@ const executeTextCommand = (command) => {
   }
   const range = sel.getRangeAt(0);
 
-  if (Math.abs(range.startOffset - range.endOffset) === 0) {
+  // if (Math.abs(range.startOffset - range.endOffset) === 0) {
+  if (range.collapsed) {
     // no range
     return;
   }
-
-  const tagMap = {
-    bold: ['B', 'STRONG'],
-    italic: ['I', 'EM'],
-    strikethrough: ['STRIKE', 'S'],
-    underline: ['U'],
-  };
 
   /**  2. 강조 효과를 확인한다.
    *    2.1 tagname을 반환한 array
@@ -83,30 +84,42 @@ const executeTextCommand = (command) => {
 
   const isApplied = getNodesInRange(range).some((element) => {
     if (['DIV', 'BODY', 'HTML', document].includes(element.tagName)) {
+      console.log(`false, element.tagName: ${element.tagName}`);
       return false;
     }
     if (tagMap[command].some((tag) => tag === element.tagName)) {
+      console.log(`true1, element.tagName: ${element.tagName}`);
       return true;
     }
     if (
       element.nodeType !== 3 &&
       element !== document &&
+      element.id !== 'carlton-note' &&
+      element.id !== 'note-container' &&
       (element.querySelector(tagMap[command][0].toLowerCase()) ||
         element.querySelector(tagMap[command][1].toLowerCase()))
     ) {
+      console.log(`true2, element.tagName: ${element.tagName}`);
       return true;
     }
   });
 
   // 3. 강조효과가 없었다면 -> surround
 
+  console.log(`applied: ${isApplied}`);
   if (!isApplied) {
     // tag for surroundContents: strong, em, s
-    range.surroundContents(document.createElement(tagMap[command][1]));
+
+    const newElement = document.createElement(tagMap[command][1]);
+    newElement.appendChild(range.extractContents());
+    range.insertNode(newElement);
+    //
+    // range.surroundContents(document.createElement(tagMap[command][1]));
 
     return;
   }
 
+  handleAppliedCommand(range, command);
   // 4. 강조효과가 있다면
 };
 
