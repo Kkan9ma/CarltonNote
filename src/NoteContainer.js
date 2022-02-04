@@ -124,7 +124,8 @@ const handleAppliedCommand = (range, command) => {
       if (!parent) {
         return;
       }
-      range.surroundContents(newElement);
+      newElement.appendChild(range.extractContents());
+      range.insertNode(newElement);
 
       const newFragElement = document.createDocumentFragment();
 
