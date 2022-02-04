@@ -54,7 +54,142 @@ function getNodesInRange(range) {
 
 const executeMediaCommand = (command) => {};
 
-const handleUnappliedCommand = () => {};
+const handleAppliedCommand = (range, command) => {
+  console.log('handleAppliedCommand');
+  /*
+    * 현재 상황
+    * 1) 드래그한 영역에 선택한 강조표시가 이미 적용되어 있음을 안다.
+    * 2) 그러나 강조표시가 어느 범위만큼 적용되어 있는지는 모르는 상태다.
+
+    목표 1. 선택한 영역 내 텍스트 모두에 강조표시가 적용되어 있다면 해당 강조 표시를 해제시킨다.
+    목표 2. 선택한 영역 내 텍스트 일부에만 강조표시가 적용되어 있다면 남은 부분도 강조표시를 해제시킨다.
+  */
+
+  // const contents = range.extractContents();
+  const contents = range.cloneContents();
+  // 삽입할 새로운 range를 clone하여 만들어두고,넣을 내용을 알맞게 조작해둠.
+  // 기존 range 내용은 삭제하고, 만들어둔 내용을 insert함.
+
+  tagMap[command].forEach((tag) => {
+    const elements = contents.querySelectorAll(tag.toLowerCase());
+    if (elements.length > 0) {
+      elements.forEach((element) => {
+        const commandHTML = element.innerHTML;
+        const val = range.createContextualFragment(commandHTML);
+
+        console.log(val);
+        element.replaceWith(val);
+      });
+
+      range.deleteContents();
+      range.insertNode(contents);
+      range.collapse();
+      Array.from(
+        document
+          .querySelector('.carlton-content-editing-area')
+          .querySelectorAll('*')
+      ).forEach((element) => {
+        if (element.textContent === '') {
+          element.remove();
+        }
+      });
+      Array.from(
+        document
+          .querySelector('.carlton-content-editing-area')
+          .querySelectorAll('span')
+      ).forEach((element) => {
+        const childSpan = element.querySelector('span');
+
+        if (childSpan) {
+          element.innerHTML = childSpan.innerHTML;
+        }
+      });
+    } else {
+      // 이미 태그가 있는 경우이며, length가 없다는 건 그 부분이 모두 같은 강조 표시로 되어 있다는 것.
+      const newElement = document.createElement('span');
+
+      function getParent(tagName, range) {
+        let ret;
+
+        ret = range.commonAncestorContainer;
+
+        while (ret && ret.tagName !== tagName) {
+          ret = ret.parentNode;
+        }
+        return ret;
+      }
+
+      const parent = getParent(tag.toUpperCase(), range);
+
+      if (!parent) {
+        return;
+      }
+      range.surroundContents(newElement);
+
+      const newFragElement = document.createDocumentFragment();
+
+      parent.childNodes.forEach((childNode) => {
+        if (childNode.tagName === 'SPAN') {
+          const tempFragElement = document.createDocumentFragment();
+          const tempHTML = childNode.innerHTML;
+          const tempVal = range.createContextualFragment(tempHTML);
+
+          tempFragElement.append(tempVal);
+          newFragElement.append(tempFragElement);
+        } else {
+          const temp = document.createElement(tag.toLowerCase());
+          if (childNode.innerHTML) {
+            temp.innerHTML = childNode.innerHTML;
+          } else {
+            temp.innerHTML = childNode.textContent;
+          }
+          newFragElement.appendChild(temp);
+        }
+      });
+
+      Array.from(newFragElement.children).forEach((element) => {
+        if (element.textContent === '') {
+          element.remove();
+        }
+      });
+
+      parent.parentNode.replaceChild(
+        newFragElement,
+        range.commonAncestorContainer
+      );
+      // range insert 필요?
+
+      range.collapse();
+      Array.from(
+        document.querySelector('.carlton-content-editing-area').children
+      ).forEach((element) => {
+        if (element.textContent === '') {
+          element.remove();
+        }
+      });
+    }
+    Array.from(
+      document
+        .querySelector('.carlton-content-editing-area')
+        .querySelectorAll('*')
+    ).forEach((element) => {
+      if (element.textContent === '') {
+        element.remove();
+      }
+    });
+    Array.from(
+      document
+        .querySelector('.carlton-content-editing-area')
+        .querySelectorAll('span')
+    ).forEach((element) => {
+      const childSpan = element.querySelector('span');
+
+      if (childSpan) {
+        element.innerHTML = childSpan.innerHTML;
+      }
+    });
+  });
+};
 
 const executeTextCommand = (command) => {
   /**
@@ -69,9 +204,7 @@ const executeTextCommand = (command) => {
   }
   const range = sel.getRangeAt(0);
 
-  // if (Math.abs(range.startOffset - range.endOffset) === 0) {
   if (range.collapsed) {
-    // no range
     return;
   }
 
@@ -82,45 +215,39 @@ const executeTextCommand = (command) => {
    *
    */
 
-  const isApplied = getNodesInRange(range).some((element) => {
-    if (['DIV', 'BODY', 'HTML', document].includes(element.tagName)) {
-      console.log(`false, element.tagName: ${element.tagName}`);
-      return false;
-    }
-    if (tagMap[command].some((tag) => tag === element.tagName)) {
-      console.log(`true1, element.tagName: ${element.tagName}`);
-      return true;
-    }
+  const isApplied = getNodesInRange(range.cloneRange()).some((element) => {
+    // const isApplied = getNodesInRange(range).some((element) => {
     if (
       element.nodeType !== 3 &&
-      element !== document &&
-      element.id !== 'carlton-note' &&
-      element.id !== 'note-container' &&
+      element.className !== 'carlton-content-editing-area' &&
+      !element.querySelector('.carlton-content-editing-area') &&
       (element.querySelector(tagMap[command][0].toLowerCase()) ||
         element.querySelector(tagMap[command][1].toLowerCase()))
     ) {
-      console.log(`true2, element.tagName: ${element.tagName}`);
       return true;
+    } else if (tagMap[command].some((tag) => tag === element.tagName)) {
+      return true;
+    } else if (
+      ['BODY', 'HTML', document].includes(element.tagName) ||
+      element.className === 'carlton-content-editing-area'
+    ) {
+      return false;
     }
+    return false;
   });
 
   // 3. 강조효과가 없었다면 -> surround
-
-  console.log(`applied: ${isApplied}`);
   if (!isApplied) {
-    // tag for surroundContents: strong, em, s
-
     const newElement = document.createElement(tagMap[command][1]);
+
     newElement.appendChild(range.extractContents());
     range.insertNode(newElement);
-    //
-    // range.surroundContents(document.createElement(tagMap[command][1]));
-
+    range.collapse();
     return;
   }
 
-  handleAppliedCommand(range, command);
   // 4. 강조효과가 있다면
+  handleAppliedCommand(range, command);
 };
 
 export default function NoteContainer({ $target, commandsList }) {
