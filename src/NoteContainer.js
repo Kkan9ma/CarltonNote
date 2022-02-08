@@ -154,10 +154,7 @@ const handleAppliedCommand = (range, command) => {
         }
       });
 
-      parent.parentNode.replaceChild(
-        newFragElement,
-        range.commonAncestorContainer
-      );
+      range.commonAncestorContainer.replaceWith(newFragElement);
       // range insert 필요?
 
       range.collapse();
