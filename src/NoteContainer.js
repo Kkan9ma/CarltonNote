@@ -219,8 +219,25 @@ const executeTextCommand = (command) => {
       element.nodeType !== 3 &&
       element.className !== 'carlton-content-editing-area' &&
       !element.querySelector('.carlton-content-editing-area') &&
-      (element.querySelector(tagMap[command][0].toLowerCase()) ||
-        element.querySelector(tagMap[command][1].toLowerCase()))
+      element.querySelector(tagMap[command][0].toLowerCase()) &&
+      element.querySelector(tagMap[command][1].toLowerCase()) &&
+      element.tagName !== 'DIV'
+
+      /** WHY (element.tagName !== 'DIV')
+       *
+       *
+       * PURPOSE: Prevent error while using getNodesInRange's result value(isApplied)
+       *
+       * ex)
+       * <div>
+       *   <strong>
+       *     1
+       *   </strong>
+       *   test            <-  1) window.getSelection().getRangeAt(0)
+       * </div>                2) getNodesInRange => [... ..., div]
+       *                       3) div.querySelector('strong') === true, but "test" node is not childNode of strong tag.
+       *
+       */
     ) {
       return true;
     } else if (tagMap[command].some((tag) => tag === element.tagName)) {
