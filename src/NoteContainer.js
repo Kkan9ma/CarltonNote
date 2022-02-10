@@ -187,6 +187,8 @@ const handleAppliedCommand = (range, command) => {
       }
     });
   });
+
+  document.querySelector('.carlton-content-editing-area').normalize();
 };
 
 const executeTextCommand = (command) => {
